@@ -1,8 +1,11 @@
 import React from 'react'
 
-function Profile() {
+function Profile({ user }: any) {
   return (
-    <div>Profile component</div>
+    <>
+      <h1>{user}</h1>
+      <div>Profile component</div>
+    </>
   )
 }
 
