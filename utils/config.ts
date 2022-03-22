@@ -1,3 +1,5 @@
+import getGitLabURI from "./getGitLabURI"
+
 export const cookieOptions = {
   cookieName: process.env.COOKIE_NAME,
   password: process.env.COOKIE_SECRET,
@@ -8,3 +10,5 @@ export const cookieOptions = {
     sameSite: 'lax'
   }
 }
+
+export const OauthURI = getGitLabURI()
