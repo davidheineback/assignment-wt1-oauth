@@ -12,13 +12,25 @@ interface GitLabTokensData {
 
 export async function getOAuthTokens(code: string): Promise<GitLabTokensData> {
   const url = process.env.NEXT_PUBLIC_TOKEN_ENDPOINT!
-
-  const options = {
-    code,
-    client_id: process.env.NEXT_PUBLIC_GITLAB_APP_ID!,
-    client_secret: process.env.GITLAB_SECRET!,
-    redirect_uri: process.env.NEXT_PUBLIC_GITLAB_OAUTH_REDIRECT_URI!,
-    grant_type: 'authorization_code',
+  let options = {}
+  if (code.includes('refresh_token')) {
+    options = {
+      client_id: process.env.NEXT_PUBLIC_GITLAB_APP_ID!,
+      client_secret: process.env.GITLAB_SECRET!,
+      refresh_token: code.split(' ')[1],
+      redirect_uri: process.env.NEXT_PUBLIC_GITLAB_OAUTH_REDIRECT_URI!,
+      grant_type: 'refresh_token'
+    }
+    
+  } else {
+    options = {
+      code,
+      client_id: process.env.NEXT_PUBLIC_GITLAB_APP_ID!,
+      client_secret: process.env.GITLAB_SECRET!,
+      redirect_uri: process.env.NEXT_PUBLIC_GITLAB_OAUTH_REDIRECT_URI!,
+      grant_type: 'authorization_code'
+    }
+  
   }
 
   try {
