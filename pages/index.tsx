@@ -5,15 +5,17 @@ import { withIronSessionSsr } from 'iron-session/next'
 import { OAuthURI, cookieOptions } from '../utils/config'
 
 export const getServerSideProps = withIronSessionSsr(
-  async function getServerSideProps ({ req, query }: any): Promise<any> {
-    const { code } = query
-
+  async function getServerSideProps ({ req }: any): Promise<any> {
   if (req.session.access_token) {
       return {
         redirect: {
           destination: '/profile',
           permanent: false,
         }
+      }
+    } else {
+      return {
+        props: {} 
       }
     }
   }, cookieOptions
