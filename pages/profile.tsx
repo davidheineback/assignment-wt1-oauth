@@ -1,7 +1,7 @@
 import React from 'react'
 import styles from '../styles/Home.module.css'
 import { withIronSessionSsr } from 'iron-session/next'
-import { cookieOptions, getOAuthTokensFrom, getUserData, getActivitiesFor } from '../utils/config'
+import { cookieOptions, getOAuthTokensFrom, getUserData } from '../utils/config'
 import Image from 'next/image'
 
 export const getServerSideProps = withIronSessionSsr(
@@ -54,11 +54,9 @@ function Profile({ user, tokenResponse: { access_token, token_type } }: any) {
         <div>User ID: {user.id}</div>
         <div>Email: {user.email}</div>
         <div>Last activity on: {user.last_activity_on}</div>
-        <button onClick={async () => {
-          await getActivitiesFor(user.id, access_token, token_type)
-        }}>
+        <a href='./activities'>
         <h3>List activties &rarr;</h3>
-        </button>
+        </a>
       </div>
     </div>
   </main>
