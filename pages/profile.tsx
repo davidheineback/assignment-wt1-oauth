@@ -1,6 +1,7 @@
 import React from 'react'
+import styles from '../styles/Home.module.css'
 import { withIronSessionSsr } from 'iron-session/next'
-import { cookieOptions, getOAuthTokensFrom, getUserData } from '../utils/config'
+import { cookieOptions, getOAuthTokensFrom, getUserData, getActivitiesFor } from '../utils/config'
 import Image from 'next/image'
 
 export const getServerSideProps = withIronSessionSsr(
@@ -28,13 +29,12 @@ export const getServerSideProps = withIronSessionSsr(
       last_activity_on
     }
 
-    console.log(user)
     try {
-        console.log(req.session)
         await req.session.save()
         return {
           props: {
-            user: req.session.user
+            user: req.session.user,
+            tokenResponse
           }
         }
     } catch (error) {
@@ -43,16 +43,25 @@ export const getServerSideProps = withIronSessionSsr(
   }, cookieOptions
 )
 
-function Profile({ user }: any) {
+function Profile({ user, tokenResponse: { access_token, token_type } }: any) {
   return (
-    <>
+    <main className={styles.main}>
+    <div className={styles.grid}>
+      <div className={styles.card}>
       <h1>{user.name}</h1>
-      <Image width='100px' height='100px' src={user.avatar_url} alt='avatar'/>
-      <div>Username: {user.username}</div>
-      <div>User ID: {user.id}</div>
-      <div>Email: {user.email}</div>
-      <div>Last activity on: {user.last_activity_on}</div>
-    </>
+        <Image width='100px' height='100px' src={user.avatar_url} alt='avatar'/>
+        <div>Username: {user.username}</div>
+        <div>User ID: {user.id}</div>
+        <div>Email: {user.email}</div>
+        <div>Last activity on: {user.last_activity_on}</div>
+        <button onClick={async () => {
+          await getActivitiesFor(user.id, access_token, token_type)
+        }}>
+        <h3>List activties &rarr;</h3>
+        </button>
+      </div>
+    </div>
+  </main>
   )
 }
 
