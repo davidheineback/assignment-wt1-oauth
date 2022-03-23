@@ -32,11 +32,21 @@ function Activities({ activities }: any) {
       <div className={styles.grid}>
       <div className={styles.card}>
         <div>Activities:</div>
+        <ul>
          {
            activities.map((activity: any, index: number) => {
-            return <div key={index}>{activity.id}</div>
+            return (
+                <div key={index} className={styles.card}>
+                  {index}
+                  <ul>{activity.action_name}</ul>
+                  <ul>{activity.created_at}</ul>
+                  <ul>{activity.target_title}</ul>
+                  <ul>{activity.target_type}</ul>
+                  </div>
+            ) 
            })
          }
+         </ul>
       </div>
     </div>
   </main>
