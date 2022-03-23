@@ -9,7 +9,6 @@ import Link from 'next/link'
 export const getServerSideProps = withIronSessionSsr(
   async function getServerSideProps ({ req, query }: any): Promise<any> {
     const { code } = query
-
     if (code) {
       const tokenResponse = await getOAuthTokensFrom(code)
       const { access_token, refresh_token, expires_in, created_at } = tokenResponse
@@ -35,7 +34,6 @@ export const getServerSideProps = withIronSessionSsr(
         }
       }
     } else if(((req.session.expires_in + req.session.created_at) - Math.ceil(Date.now() / 1000) < 0)) {
-
       const tokens = await getOAuthTokensFrom(`refresh_token ${req.session.refresh_token}`)
 
       const { access_token, refresh_token, expires_in, created_at } = tokens
@@ -88,7 +86,7 @@ function Profile({ user }: any) {
         <div>User ID: {user.id}</div>
         <div>Email: {user.email}</div>
         <div>Last activity on: {user.last_activity_on}</div>
-        <Link href='./activities' passHref>
+        <Link href='/activities' passHref>
           <h3>List activties &rarr;</h3>
         </Link>
         <Link href='/logout' passHref>
