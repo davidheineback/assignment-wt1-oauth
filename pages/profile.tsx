@@ -4,6 +4,7 @@ import { withIronSessionSsr } from 'iron-session/next'
 import { cookieOptions, getOAuthTokensFrom, getUserData } from '../utils/config'
 import { OAuthURI } from '../utils/config'
 import Image from 'next/image'
+import Link from 'next/link'
 
 export const getServerSideProps = withIronSessionSsr(
   async function getServerSideProps ({ req, query }: any): Promise<any> {
@@ -11,10 +12,13 @@ export const getServerSideProps = withIronSessionSsr(
 
     if (code) {
       const tokenResponse = await getOAuthTokensFrom(code)
-      const { access_token, refresh_token } = tokenResponse
+      const { access_token, refresh_token, expires_in, created_at } = tokenResponse
+
       req.session = {
         access_token,
-        refresh_token
+        refresh_token,
+        expires_in,
+        created_at
       }
       await req.session.save()
       return {
@@ -30,6 +34,19 @@ export const getServerSideProps = withIronSessionSsr(
           permanent: false,
         }
       }
+    } else if(((req.session.expires_in + req.session.created_at) - Math.ceil(Date.now() / 1000) < 0)) {
+
+      const tokens = await getOAuthTokensFrom(`refresh_token ${req.session.refresh_token}`)
+
+      const { access_token, refresh_token, expires_in, created_at } = tokens
+
+      req.session = {
+        access_token,
+        refresh_token,
+        expires_in,
+        created_at
+      }
+
     }
 
     try {
@@ -52,8 +69,8 @@ export const getServerSideProps = withIronSessionSsr(
             user: req.session.user,
           }
         }
-    } catch (error) {
-
+    } catch (error: any) {
+      console.log(error)
     }
   }, cookieOptions
 )
@@ -64,14 +81,20 @@ function Profile({ user }: any) {
     <div className={styles.grid}>
       <div className={styles.card}>
       <h1>{user.name}</h1>
-        <Image width='100px' height='100px' src={user.avatar_url} alt='avatar'/>
+        <div style={{borderRadius: '100px', overflow: 'hidden'}}>
+          <Image width='100px' height='100px' src={user.avatar_url} alt='avatar'/>
+        </div>
         <div>Username: {user.username}</div>
         <div>User ID: {user.id}</div>
         <div>Email: {user.email}</div>
         <div>Last activity on: {user.last_activity_on}</div>
-        <a href='./activities'>
-        <h3>List activties &rarr;</h3>
-        </a>
+        <Link href='./activities' passHref>
+          <h3>List activties &rarr;</h3>
+        </Link>
+        <Link href='/logout' passHref>
+          <h3>Logout &rarr;</h3>
+        </Link>
+        
       </div>
     </div>
   </main>
