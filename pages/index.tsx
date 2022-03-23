@@ -1,7 +1,23 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
-import { OauthURI } from '../utils/config'
+import { withIronSessionSsr } from 'iron-session/next'
+import { OAuthURI, cookieOptions } from '../utils/config'
+
+export const getServerSideProps = withIronSessionSsr(
+  async function getServerSideProps ({ req, query }: any): Promise<any> {
+    const { code } = query
+
+  if (req.session.access_token) {
+      return {
+        redirect: {
+          destination: '/profile',
+          permanent: false,
+        }
+      }
+    }
+  }, cookieOptions
+)
 
 const Home: NextPage = () => {
   return (
@@ -18,7 +34,7 @@ const Home: NextPage = () => {
         </h1>
 
         <div className={styles.grid}>
-          <a href={OauthURI} className={styles.card}>
+          <a href={OAuthURI} className={styles.card}>
             <h2>Login &rarr;</h2>
             <p>Login with your GitLab credentials.</p>
           </a>

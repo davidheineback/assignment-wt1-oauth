@@ -2,35 +2,51 @@ import React from 'react'
 import styles from '../styles/Home.module.css'
 import { withIronSessionSsr } from 'iron-session/next'
 import { cookieOptions, getOAuthTokensFrom, getUserData } from '../utils/config'
+import { OAuthURI } from '../utils/config'
 import Image from 'next/image'
 
 export const getServerSideProps = withIronSessionSsr(
   async function getServerSideProps ({ req, query }: any): Promise<any> {
     const { code } = query
 
-    const tokenResponse = await getOAuthTokensFrom(code)
-    
-    const { access_token, refresh_token } = tokenResponse
-    req.session = {
-      access_token,
-      refresh_token
-    }
-
-    const user = await getUserData(access_token)
-
-    const { id, name, username, email, avatar_url, last_activity_on } = user
-
-    req.session.user = {
-      id,
-      name,
-      username,
-      email,
-      avatar_url,
-      last_activity_on
+    if (code) {
+      const tokenResponse = await getOAuthTokensFrom(code)
+      const { access_token, refresh_token } = tokenResponse
+      req.session = {
+        access_token,
+        refresh_token
+      }
+      await req.session.save()
+      return {
+        redirect: {
+          destination: '/profile',
+          permanent: false,
+        }
+      }
+    } else if (!req.session.access_token) {
+      return {
+        redirect: {
+          destination: OAuthURI,
+          permanent: false,
+        }
+      }
     }
 
     try {
+      const user = await getUserData(req.session.access_token)
+
+      const { id, name, username, email, avatar_url, last_activity_on } = user
+  
+      req.session.user = {
+        id,
+        name,
+        username,
+        email,
+        avatar_url,
+        last_activity_on
+      }
         await req.session.save()
+        
         return {
           props: {
             user: req.session.user,
