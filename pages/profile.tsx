@@ -10,13 +10,13 @@ export const getServerSideProps = withIronSessionSsr(
 
     const tokenResponse = await getOAuthTokensFrom(code)
     
-    const { access_token, refresh_token, token_type } = tokenResponse
+    const { access_token, refresh_token } = tokenResponse
     req.session = {
       access_token,
       refresh_token
     }
 
-    const user = await getUserData(access_token, token_type)
+    const user = await getUserData(access_token)
 
     const { id, name, username, email, avatar_url, last_activity_on } = user
 
@@ -34,7 +34,6 @@ export const getServerSideProps = withIronSessionSsr(
         return {
           props: {
             user: req.session.user,
-            tokenResponse
           }
         }
     } catch (error) {
@@ -43,7 +42,7 @@ export const getServerSideProps = withIronSessionSsr(
   }, cookieOptions
 )
 
-function Profile({ user, tokenResponse: { access_token, token_type } }: any) {
+function Profile({ user }: any) {
   return (
     <main className={styles.main}>
     <div className={styles.grid}>
