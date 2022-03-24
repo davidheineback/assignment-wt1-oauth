@@ -6,20 +6,13 @@ import { OAuthURI, cookieOptions } from '../utils/config'
 
 export const getServerSideProps = withIronSessionSsr(
   async function getServerSideProps ({ req }: any): Promise<any> {
-    const { access_token, expires_in, created_at } = req.session
+    const { access_token } = req.session
       if (access_token) {
-      if (((expires_in + created_at) - Math.ceil(Date.now() / 1000)) < 0) {
-        req.session.destroy()
-        return {
-          props: {}
-        }
-      } else {
         return {
           redirect: {
             destination: '/profile',
             permanent: false,
           }
-        }
       }
     } else {
       return {
