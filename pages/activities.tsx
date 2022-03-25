@@ -71,4 +71,3 @@ function Activities({ activities }: any) {
 export default Activities
 
 
-// getActivitiesFor(user.id, access_token, token_type)
