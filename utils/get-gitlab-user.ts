@@ -10,7 +10,14 @@ export async function getGitLabUserFrom(access_token: string) {
         }
       }
     )
-    return res.data
+    
+      const filteredUserData = (({ 
+        id, name, username, email, avatar_url, last_activity_on 
+      }) => ({ 
+        id, name, username, email, avatar_url, last_activity_on 
+      }))(res.data)
+
+    return filteredUserData
   } catch (error) {
     console.log(error)
   }
