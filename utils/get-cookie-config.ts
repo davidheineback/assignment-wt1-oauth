@@ -7,7 +7,7 @@ interface CookieOptions extends IronSessionOptions {
     secure: boolean,
     httpOnly: boolean,
     maxAge: number
-    sameSite: boolean | 'lax' | 'strict' | 'none' | undefined
+    sameSite: 'lax' | 'strict' | 'none'
 }
 }
 export const cookieOptionsConfig: CookieOptions = {
