@@ -1,27 +1,21 @@
 import React from 'react'
 import styles from '../styles/Home.module.css'
 import { withIronSessionSsr } from 'iron-session/next'
-import { cookieOptions, getOAuthTokensFrom, getUserData } from '../utils/config'
+import { cookieOptions, getUserData } from '../utils/config'
 import { OAuthURI } from '../utils/config'
 import Image from 'next/image'
 import Link from 'next/link'
+import { setSessionToken, invalidToken } from '../utils/server-side-props'
 
 
 
 export const getServerSideProps = withIronSessionSsr(
-  async function getServerSideProps ({ req, query }: any): Promise<any> {
+  async function getServerSideProps ({ req, query }: any ): Promise<any> {
     const { code } = query
     if (code) {
-      const tokenResponse = await getOAuthTokensFrom(code)
-      const { access_token, refresh_token, expires_in, created_at } = tokenResponse
-
-      req.session = {
-        access_token,
-        refresh_token,
-        expires_in,
-        created_at
-      }
+      req.session = await setSessionToken(code)
       await req.session.save()
+
       return {
         redirect: {
           destination: '/profile',
@@ -35,27 +29,14 @@ export const getServerSideProps = withIronSessionSsr(
           permanent: false,
         }
       }
-    } else if(((req.session.expires_in + req.session.created_at) - Math.ceil(Date.now() / 1000) < 0)) {
-      const tokens = await getOAuthTokensFrom(`refresh_token ${req.session.refresh_token}`)
-
-      const { access_token, refresh_token, expires_in, created_at } = tokens
-
-      req.session = {
-        access_token,
-        refresh_token,
-        expires_in,
-        created_at
-      }
-
+    } else if(invalidToken(req.session.expiration)) {
+      req.session = await setSessionToken(`refresh_token ${req.session.refresh_token}`)
+      await req.session.save()
     }
 
     try {
-      const user = await getUserData(req.session.access_token)
-
-      const { id, name, username, email, avatar_url, last_activity_on } = user
-  
-      req.session.user = { id, name, username, email, avatar_url, last_activity_on }
-        await req.session.save()
+      req.session.user = await getUserData(req.session.access_token)
+      await req.session.save()
         
         return {
           props: {
