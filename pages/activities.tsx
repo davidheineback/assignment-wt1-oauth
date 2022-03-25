@@ -23,6 +23,7 @@ export const getServerSideProps = withIronSessionSsr(
       try {
         return {
           props: {
+            user: req.session.user,
             activities
           }
         }
@@ -33,7 +34,8 @@ export const getServerSideProps = withIronSessionSsr(
   }, cookieOptions
   )
 
-function Activities({ activities }: any) {
+function Activities({ activities }: any) {  
+  
   return (
     <main className={styles.main}>
       <div className={styles.grid}>

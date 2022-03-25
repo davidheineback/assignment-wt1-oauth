@@ -6,6 +6,8 @@ import { OAuthURI } from '../utils/config'
 import Image from 'next/image'
 import Link from 'next/link'
 
+
+
 export const getServerSideProps = withIronSessionSsr(
   async function getServerSideProps ({ req, query }: any): Promise<any> {
     const { code } = query
@@ -52,14 +54,7 @@ export const getServerSideProps = withIronSessionSsr(
 
       const { id, name, username, email, avatar_url, last_activity_on } = user
   
-      req.session.user = {
-        id,
-        name,
-        username,
-        email,
-        avatar_url,
-        last_activity_on
-      }
+      req.session.user = { id, name, username, email, avatar_url, last_activity_on }
         await req.session.save()
         
         return {
