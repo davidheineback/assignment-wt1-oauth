@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { UserData } from '../types/user-data'
 
 export async function getGitLabUserFrom(access_token: string) {
   try {
@@ -11,7 +12,7 @@ export async function getGitLabUserFrom(access_token: string) {
       }
     )
     
-      const filteredUserData = (({ 
+      const filteredUserData: UserData = (({ 
         id, name, username, email, avatar_url, last_activity_on 
       }) => ({ 
         id, name, username, email, avatar_url, last_activity_on 
