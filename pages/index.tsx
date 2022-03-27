@@ -6,7 +6,7 @@ import { OAuthURI, cookieOptions } from '../utils/config'
 
 export const getServerSideProps = withIronSessionSsr(
   async function getServerSideProps ({ req }: any): Promise<any> {
-    const { access_token } = req.session
+    const { access_token } = req.session.tokens
       if (access_token) {
         return {
           redirect: {
