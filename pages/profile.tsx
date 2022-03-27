@@ -5,17 +5,32 @@ import { cookieOptions, getUserData } from '../utils/config'
 import { OAuthURI } from '../utils/config'
 import Image from 'next/image'
 import Link from 'next/link'
-import { setSessionToken, invalidToken } from '../utils/server-side-props'
+import { setSessionToken, invalidToken, generateState } from '../utils/server-side-props'
 import { GetServerSidePropsContext } from 'next'
+import { IronSession } from 'iron-session'
 
 
 
 export const getServerSideProps = withIronSessionSsr(
   async function getServerSideProps ({ req, query }: GetServerSidePropsContext): Promise<any> {
-    const { code } = query
+    const { code, state } = query
     if (code && typeof code === 'string') {
-      req.session.tokens = await setSessionToken(code)
-      await req.session.save()
+      if (state === req.session.state) {
+        req.session.tokens = await setSessionToken(code)
+        await req.session.save()
+      } else {
+        req.session.destroy()
+        return {
+          props: {
+            tokens: null,
+            error: {
+              code: 401,
+              message: 'Unauthorized'
+            }
+          }
+        }
+      }
+
 
       return {
         redirect: {
@@ -23,10 +38,12 @@ export const getServerSideProps = withIronSessionSsr(
           permanent: false,
         }
       }
-    } else if (!req.session.tokens?.access_token) {
+    } else if (!req.session.tokens) {
+      req.session.state = generateState()
+      await req.session.save()
       return {
         redirect: {
-          destination: OAuthURI,
+          destination: OAuthURI(req.session.state),
           permanent: false,
         }
       }
@@ -36,7 +53,7 @@ export const getServerSideProps = withIronSessionSsr(
     }
 
     try {
-      if (req.session.tokens.access_token) {
+      if (req.session.tokens?.access_token) {
         req.session.user = await getUserData(req.session.tokens.access_token)
       }
       
@@ -53,8 +70,9 @@ export const getServerSideProps = withIronSessionSsr(
   }, cookieOptions
 )
 
-function Profile({ user }: any) {
+function Profile({ user }:IronSession) {
   return (
+    user &&
     <main className={styles.main}>
     <div className={styles.grid}>
       <div className={styles.card}>
@@ -62,8 +80,8 @@ function Profile({ user }: any) {
         <div style={{borderRadius: '100px', overflow: 'hidden'}}>
           <Image width='100px' height='100px' src={user.avatar_url} alt='avatar'/>
         </div>
-        <div>Username: {user.username}</div>
-        <div>User ID: {user.id}</div>
+        <div>Username: {user?.username}</div>
+        <div>User ID: {user?.id}</div>
         <div>Email: {user.email}</div>
         <div>Last activity on: {user.last_activity_on}</div>
         <Link href='/activities' passHref>
