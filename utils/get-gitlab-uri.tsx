@@ -1,11 +1,11 @@
-function getGitLabURI() {
+function getGitLabURI(state: string) {
   const rootUrl = 'https://gitlab.lnu.se/oauth/authorize'
 
   const options = {
     redirect_uri: process.env.NEXT_PUBLIC_GITLAB_OAUTH_REDIRECT_URI!,
     client_id: process.env.NEXT_PUBLIC_GITLAB_APP_ID!,
     response_type: 'code',
-    state: process.env.STATE_SECRET!,
+    state,
     scope: [
       'read_api',
       'read_user',

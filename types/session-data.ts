@@ -7,7 +7,8 @@ declare module "iron-session" {
       refresh_token?: string,
       expiration?: number,
     }
-    user?: UserData
+    user?: UserData,
+    state?: string
 
     }
 

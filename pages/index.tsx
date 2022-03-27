@@ -1,13 +1,13 @@
-import type { NextPage } from 'next'
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 import { withIronSessionSsr } from 'iron-session/next'
 import { OAuthURI, cookieOptions } from '../utils/config'
+import { generateState } from '../utils/server-side-props'
+import { IronSession } from 'iron-session'
 
 export const getServerSideProps = withIronSessionSsr(
   async function getServerSideProps ({ req }: any): Promise<any> {
-    const { access_token } = req.session.tokens
-      if (access_token) {
+      if (req.session?.tokens?.access_token) {
         return {
           redirect: {
             destination: '/profile',
@@ -15,14 +15,18 @@ export const getServerSideProps = withIronSessionSsr(
           }
       }
     } else {
+      req.session.state = generateState()
+      await req.session.save()
       return {
-        props: {} 
+        props: {
+          state: req.session.state 
+        }
       }
     }
   }, cookieOptions
 )
 
-const Home: NextPage = () => {
+function Home({ state }:IronSession) {
   return (
     <div className={styles.container}>
       <Head>
@@ -35,9 +39,8 @@ const Home: NextPage = () => {
         <h1 className={styles.title}>
           Welcome to this Oauth Application
         </h1>
-
         <div className={styles.grid}>
-          <a href={OAuthURI} className={styles.card}>
+          <a href={state && OAuthURI(state)} className={styles.card}>
             <h2>Login &rarr;</h2>
             <p>Login with your GitLab credentials.</p>
           </a>
