@@ -8,6 +8,7 @@ import Link from 'next/link'
 import { setSessionToken, invalidToken, generateState } from '../utils/server-side-props'
 import { GetServerSidePropsContext } from 'next'
 import { IronSession } from 'iron-session'
+import Error from 'next/error'
 
 
 
@@ -19,7 +20,6 @@ export const getServerSideProps = withIronSessionSsr(
         req.session.tokens = await setSessionToken(code)
         await req.session.save()
       } else {
-        req.session.destroy()
         return {
           props: {
             tokens: null,
@@ -70,7 +70,12 @@ export const getServerSideProps = withIronSessionSsr(
   }, cookieOptions
 )
 
-function Profile({ user }:IronSession) {
+function Profile({ user, error }:IronSession) {
+  
+  if (error) {
+    return <Error title={error.message} statusCode={error.code} />
+  }
+
   return (
     user &&
     <main className={styles.main}>
