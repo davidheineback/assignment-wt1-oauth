@@ -6,14 +6,15 @@ import { OAuthURI } from '../utils/config'
 import Image from 'next/image'
 import Link from 'next/link'
 import { setSessionToken, invalidToken } from '../utils/server-side-props'
+import { GetServerSidePropsContext } from 'next'
 
 
 
 export const getServerSideProps = withIronSessionSsr(
-  async function getServerSideProps ({ req, query }: any ): Promise<any> {
+  async function getServerSideProps ({ req, query }: GetServerSidePropsContext): Promise<any> {
     const { code } = query
-    if (code) {
-      req.session = await setSessionToken(code)
+    if (code && typeof code === 'string') {
+      req.session.tokens = await setSessionToken(code)
       await req.session.save()
 
       return {
@@ -22,20 +23,23 @@ export const getServerSideProps = withIronSessionSsr(
           permanent: false,
         }
       }
-    } else if (!req.session.access_token) {
+    } else if (!req.session.tokens?.access_token) {
       return {
         redirect: {
           destination: OAuthURI,
           permanent: false,
         }
       }
-    } else if(invalidToken(req.session.expiration)) {
-      req.session = await setSessionToken(`refresh_token ${req.session.refresh_token}`)
+    } else if(req.session.tokens.expiration && invalidToken(req.session.tokens.expiration)) {
+      req.session.tokens = await setSessionToken(`refresh_token ${req.session.tokens?.refresh_token}`)
       await req.session.save()
     }
 
     try {
-      req.session.user = await getUserData(req.session.access_token)
+      if (req.session.tokens.access_token) {
+        req.session.user = await getUserData(req.session.tokens.access_token)
+      }
+      
       await req.session.save()
         
         return {
