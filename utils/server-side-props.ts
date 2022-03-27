@@ -1,4 +1,5 @@
 import { getOAuthTokensFrom } from "./config"
+import crypto from 'crypto'
 
 export async function setSessionToken(code: string) {
   const tokens = await getOAuthTokensFrom(code)
@@ -15,4 +16,9 @@ export async function setSessionToken(code: string) {
 
 export function invalidToken(expiration: number) {
   return (expiration - Math.ceil(Date.now() / 1000) < 0)
+}
+
+
+export function generateState(): string {
+  return crypto.randomBytes(20).toString('hex')
 }
