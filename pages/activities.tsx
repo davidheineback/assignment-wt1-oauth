@@ -1,20 +1,22 @@
 import React from 'react'
 import styles from '../styles/Home.module.css'
 import { Table } from 'react-bootstrap'
-import { withSessionSsr } from '../utils/server-side-props'
+import { generateState, withSessionSsr } from '../utils/server-side-props'
 import { getActivitiesFor, OAuthURI } from '../utils/config'
+import { GetServerSidePropsContext } from 'next'
 
 export const getServerSideProps = withSessionSsr(
-  async function getServerSideProps ({ req }: any): Promise<any> {
-    if (!req.session.tokens.access_token) {
+  async function getServerSideProps ({ req }: GetServerSidePropsContext): Promise<any> {
+    if (!req.session.tokens?.access_token) {
+      req.session.state = generateState()
+      await req.session.save()
       return {
         redirect: {
           destination: OAuthURI(req.session.state),
           permanent: false,
         }
       }
-    } else {
-
+    } else if (req.session.user) {
       const { access_token } = req.session.tokens
       const { id } = req.session.user
       
@@ -24,7 +26,8 @@ export const getServerSideProps = withSessionSsr(
         return {
           props: {
             user: req.session.user,
-            activities
+            activities,
+            pageTitle: 'Activities'
           }
         }
       } catch (error) {

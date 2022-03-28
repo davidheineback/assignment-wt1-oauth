@@ -5,7 +5,7 @@ import { OAuthURI } from '../utils/config'
 import Image from 'next/image'
 import Link from 'next/link'
 import { setSessionToken, invalidToken, generateState, withSessionSsr} from '../utils/server-side-props'
-import { GetServerSidePropsContext } from 'next'
+import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next'
 import { IronSession } from 'iron-session'
 import Error from 'next/error'
 
@@ -29,8 +29,6 @@ export const getServerSideProps = withSessionSsr(
           }
         }
       }
-
-
       return {
         redirect: {
           destination: '/profile',
@@ -61,6 +59,7 @@ export const getServerSideProps = withSessionSsr(
         return {
           props: {
             user: req.session.user,
+            pageTitle: 'Profile'
           }
         }
     } catch (error: any) {
