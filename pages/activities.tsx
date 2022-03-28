@@ -9,7 +9,7 @@ export const getServerSideProps = withIronSessionSsr(
     if (!req.session.tokens.access_token) {
       return {
         redirect: {
-          destination: OAuthURI,
+          destination: OAuthURI(req.session.state),
           permanent: false,
         }
       }
