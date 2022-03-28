@@ -4,15 +4,17 @@ import { cookieOptionsConfig } from "./get-cookie-config"
 import { withIronSessionSsr } from 'iron-session/next'
 import { GetServerSidePropsContext, GetServerSidePropsResult } from "next"
 
+// From iron-session documentation https://github.com/vvo/iron-session
 export function withSessionSsr<
-  P extends { [key: string]: unknown } = { [key: string]: unknown },
+P extends { [key: string]: unknown } = { [key: string]: unknown },
 >(
   handler: (
     context: GetServerSidePropsContext,
   ) => GetServerSidePropsResult<P> | Promise<GetServerSidePropsResult<P>>,
 ) {
-  return withIronSessionSsr(handler, cookieOptionsConfig);
+  return withIronSessionSsr(handler, cookieOptionsConfig)
 }
+
 
 export async function setSessionToken(code: string) {
   const tokens = await getOAuthTokensFrom(code)
