@@ -1,11 +1,10 @@
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
-import { withIronSessionSsr } from 'iron-session/next'
-import { OAuthURI, cookieOptions } from '../utils/config'
-import { generateState } from '../utils/server-side-props'
+import { OAuthURI } from '../utils/config'
+import { generateState, withSessionSsr} from '../utils/server-side-props'
 import { IronSession } from 'iron-session'
 
-export const getServerSideProps = withIronSessionSsr(
+export const getServerSideProps = withSessionSsr(
   async function getServerSideProps ({ req }: any): Promise<any> {
       if (req.session?.tokens?.access_token) {
         return {
@@ -23,7 +22,7 @@ export const getServerSideProps = withIronSessionSsr(
         }
       }
     }
-  }, cookieOptions
+  }
 )
 
 function Home({ state }:IronSession) {

@@ -1,8 +1,7 @@
 
-import { withIronSessionSsr } from 'iron-session/next'
-import { cookieOptions } from '../utils/config'
+import { withSessionSsr} from '../utils/server-side-props'
 
-export const getServerSideProps = withIronSessionSsr(
+export const getServerSideProps = withSessionSsr(
   async function getServerSideProps ({ req }: any): Promise<any> {
         req.session.destroy()
       
@@ -12,8 +11,7 @@ export const getServerSideProps = withIronSessionSsr(
           permanent: false,
         }
       }
-  }, cookieOptions
-)
+  })
 
 function logout() {
   return (

@@ -1,10 +1,10 @@
 import React from 'react'
 import styles from '../styles/Home.module.css'
 import { Table } from 'react-bootstrap'
-import { withIronSessionSsr } from 'iron-session/next'
-import { cookieOptions, getActivitiesFor, OAuthURI } from '../utils/config'
+import { withSessionSsr } from '../utils/server-side-props'
+import { getActivitiesFor, OAuthURI } from '../utils/config'
 
-export const getServerSideProps = withIronSessionSsr(
+export const getServerSideProps = withSessionSsr(
   async function getServerSideProps ({ req }: any): Promise<any> {
     if (!req.session.tokens.access_token) {
       return {
@@ -31,8 +31,7 @@ export const getServerSideProps = withIronSessionSsr(
         
       }
     }
-  }, cookieOptions
-  )
+  })
 
 function Activities({ activities }: any) {  
   

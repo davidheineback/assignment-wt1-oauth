@@ -1,18 +1,17 @@
 import React from 'react'
 import styles from '../styles/Home.module.css'
-import { withIronSessionSsr } from 'iron-session/next'
-import { cookieOptions, getUserData } from '../utils/config'
+import { getUserData } from '../utils/config'
 import { OAuthURI } from '../utils/config'
 import Image from 'next/image'
 import Link from 'next/link'
-import { setSessionToken, invalidToken, generateState } from '../utils/server-side-props'
+import { setSessionToken, invalidToken, generateState, withSessionSsr} from '../utils/server-side-props'
 import { GetServerSidePropsContext } from 'next'
 import { IronSession } from 'iron-session'
 import Error from 'next/error'
 
 
 
-export const getServerSideProps = withIronSessionSsr(
+export const getServerSideProps = withSessionSsr(
   async function getServerSideProps ({ req, query }: GetServerSidePropsContext): Promise<any> {
     const { code, state } = query
     if (code && typeof code === 'string') {
@@ -67,8 +66,7 @@ export const getServerSideProps = withIronSessionSsr(
     } catch (error: any) {
       console.log(error)
     }
-  }, cookieOptions
-)
+  })
 
 function Profile({ user, error }:IronSession) {
   

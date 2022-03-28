@@ -1,5 +1,18 @@
 import { getOAuthTokensFrom } from "./config"
 import crypto from 'crypto'
+import { cookieOptionsConfig } from "./get-cookie-config"
+import { withIronSessionSsr } from 'iron-session/next'
+import { GetServerSidePropsContext, GetServerSidePropsResult } from "next"
+
+export function withSessionSsr<
+  P extends { [key: string]: unknown } = { [key: string]: unknown },
+>(
+  handler: (
+    context: GetServerSidePropsContext,
+  ) => GetServerSidePropsResult<P> | Promise<GetServerSidePropsResult<P>>,
+) {
+  return withIronSessionSsr(handler, cookieOptionsConfig);
+}
 
 export async function setSessionToken(code: string) {
   const tokens = await getOAuthTokensFrom(code)
