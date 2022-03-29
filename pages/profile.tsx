@@ -97,10 +97,10 @@ function Profile({ user, error }:IronSession) {
         <div>Email: {user.email}</div>
         <div>Last activity on: {user.last_activity_on}</div>
         <Link href='/activities' passHref>
-          <h3>List activties &rarr;</h3>
+          <h3 className={styles.clickEventStyle}>List activties &rarr;</h3>
         </Link>
         <Link href='/logout' passHref>
-          <h3>Logout &rarr;</h3>
+          <h3 className={styles.clickEventStyle}>Logout &rarr;</h3>
         </Link>
         
       </div>
