@@ -3,7 +3,9 @@ import { ActivityContainer, Activity } from '../types/acitvity-types'
 
 
 
-
+/**
+ * Method to get authenticated users 101 latest activities.
+ */
 export async function getGitlabUserActivtiesFrom(userID: string, access_token: string) {
   try {
     const list:ActivityContainer = []
@@ -30,8 +32,9 @@ export async function getGitlabUserActivtiesFrom(userID: string, access_token: s
           list.push(currentActivity)
         })
         pageIndex++
+        // if the list gets longer than 101 objects or the page index exceeds the number of total pages break the loop.
       } while (list.length < 101 && pageIndex < Number(res.headers['x-total-pages']))
-      
+    // return the 101 first objects in the list.
     return list.slice(0, 101)
   } catch (error) {
     console.log(error)

@@ -1,17 +1,22 @@
-import styles from '../styles/Home.module.css'
-import { OAuthURI } from '../utils/config'
-import { generateState, withSessionSsr} from '../utils/server-side-props'
-import { IronSession } from 'iron-session'
-import { GetServerSidePropsContext } from 'next'
+import styles from "../styles/Home.module.css"
+import { OAuthURI } from "../utils/config"
+import { generateState, withSessionSsr } from "../utils/server-side-props"
+import { IronSession } from "iron-session"
+import { GetServerSidePropsContext } from "next"
 
+/**
+ * Create props for Ssr and session data is stored in encrypted cookies
+ */
 export const getServerSideProps = withSessionSsr(
-  async function getServerSideProps ({ req }: GetServerSidePropsContext): Promise<any> {
-      if (req.session?.tokens?.access_token) {
-        return {
-          redirect: {
-            destination: '/profile',
-            permanent: false,
-          }
+  async function getServerSideProps({
+    req,
+  }: GetServerSidePropsContext): Promise<any> {
+    if (req.session?.tokens?.access_token) {
+      return {
+        redirect: {
+          destination: "/profile",
+          permanent: false,
+        },
       }
     } else {
       req.session.state = generateState()
@@ -20,20 +25,21 @@ export const getServerSideProps = withSessionSsr(
         props: {
           user: null,
           state: req.session.state,
-          pageTitle: null
-        }
+          pageTitle: null,
+        },
       }
     }
   }
 )
 
-function Home({ state }:IronSession) {
+/**
+ * JSX returning the index component.
+ */
+function Home({ state }: IronSession) {
   return (
     <div className={styles.container}>
       <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to this Oauth Application
-        </h1>
+        <h1 className={styles.title}>Welcome to this Oauth Application</h1>
         <div className={styles.grid}>
           <a href={state && OAuthURI(state)} className={styles.card}>
             <h2>Login &rarr;</h2>

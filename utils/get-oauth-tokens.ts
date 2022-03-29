@@ -18,6 +18,8 @@ type optionsInterface = {
   code?: string
 }
 
+
+// Method to revoke access token from GitLab.
 export async function revokeGitLabAccess(token: string) {
   const res = await axios.post('https://gitlab.lnu.se/oauth/revoke', {
     client_id: process.env.NEXT_PUBLIC_GITLAB_APP_ID,
@@ -26,18 +28,26 @@ export async function revokeGitLabAccess(token: string) {
   })
 } 
 
+type RequestType = {
+  refresh_token: boolean // if request refers to refresh token set to true, else set to false.
+  code: string
+}
 
-export async function getOAuthTokens(code: string): Promise<GitLabTokensData> {
+/**
+ * Method to get tokens from GitLab.
+ */
+export async function getOAuthTokens({code, refresh_token}:RequestType): Promise<GitLabTokensData> {
   const url = process.env.NEXT_PUBLIC_TOKEN_ENDPOINT!
 
   let options: optionsInterface = {
     client_id: process.env.NEXT_PUBLIC_GITLAB_APP_ID!,
     client_secret: process.env.GITLAB_SECRET!,
     redirect_uri: process.env.NEXT_PUBLIC_GITLAB_OAUTH_REDIRECT_URI!,
-    grant_type: code.includes('refresh_token') ? 'refresh_token' : 'authorization_code'
+    grant_type: refresh_token ? 'refresh_token' : 'authorization_code'
   }
 
-  if (code.includes('refresh_token')) {
+  // if the parameter includes the keyword 
+  if (refresh_token) {
     options.refresh_token = code.split(' ')[1]
     } else {
     options.code = code

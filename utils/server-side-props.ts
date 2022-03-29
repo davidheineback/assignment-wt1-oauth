@@ -1,8 +1,9 @@
-import { getOAuthTokensFrom } from "./config"
+import { getOAuthTokensFrom, OAuthURI } from './config'
 import crypto from 'crypto'
-import { cookieOptionsConfig } from "./get-cookie-config"
+import { cookieOptionsConfig } from './get-cookie-config'
 import { withIronSessionSsr } from 'iron-session/next'
-import { GetServerSidePropsContext, GetServerSidePropsResult } from "next"
+import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next'
+import { IronSession } from 'iron-session'
 
 // From iron-session documentation https://github.com/vvo/iron-session
 export function withSessionSsr<
@@ -16,8 +17,8 @@ P extends { [key: string]: unknown } = { [key: string]: unknown },
 }
 
 
-export async function setSessionToken(code: string) {
-  const tokens = await getOAuthTokensFrom(code)
+export async function setSessionToken(code: string, refreshToken: boolean) {
+  const tokens = await getOAuthTokensFrom(code, refreshToken)
 
   const { access_token, refresh_token, expires_in, created_at } = tokens
   const expiration = expires_in + created_at
@@ -36,4 +37,15 @@ export function invalidToken(expiration: number) {
 
 export function generateState(): string {
   return crypto.randomBytes(20).toString('hex')
+}
+
+export async function redirectWithNewStateFrom(session: IronSession) {
+  session.state = generateState()
+  await session.save()
+  return {
+    redirect: {
+      destination: OAuthURI(session.state),
+      permanent: false,
+    }
+  }
 }

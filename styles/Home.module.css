@@ -3,7 +3,7 @@
 }
 
 .main {
-  min-height: 100vh;
+  min-height: calc(100vh - 56px);
   padding: 4rem 0;
   flex: 1;
   display: flex;
@@ -99,7 +99,7 @@
 .card h2 {
   margin: 0 0 1rem 0;
   font-size: 1.5rem;
-  cursor: pointer; 
+  cursor: pointer;
 }
 
 .card p {
