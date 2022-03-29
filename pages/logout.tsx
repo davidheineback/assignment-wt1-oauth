@@ -1,9 +1,12 @@
 
-import { withSessionSsr} from '../utils/server-side-props'
+import { withSessionSsr } from '../utils/server-side-props'
+import { revokeAccess } from '../utils/config'
 
 export const getServerSideProps = withSessionSsr(
   async function getServerSideProps ({ req }: any): Promise<any> {
-        req.session.destroy()
+  
+      req.session?.tokens?.access_token && revokeAccess(req.session?.tokens?.access_token)
+      req.session.destroy()
       
       return {
         redirect: {

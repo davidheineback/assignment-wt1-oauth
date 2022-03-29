@@ -18,6 +18,14 @@ type optionsInterface = {
   code?: string
 }
 
+export async function revokeGitLabAccess(token: string) {
+  const res = await axios.post('https://gitlab.lnu.se/oauth/revoke', {
+    client_id: process.env.NEXT_PUBLIC_GITLAB_APP_ID,
+    client_secret: process.env.GITLAB_SECRET!,
+    token
+  })
+} 
+
 
 export async function getOAuthTokens(code: string): Promise<GitLabTokensData> {
   const url = process.env.NEXT_PUBLIC_TOKEN_ENDPOINT!
