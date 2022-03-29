@@ -5,6 +5,8 @@ import { generateState, withSessionSsr } from '../utils/server-side-props'
 import { getActivitiesFor, OAuthURI } from '../utils/config'
 import { GetServerSidePropsContext } from 'next'
 import Loader from '../components/Loader'
+import TableContent from '../components/TableContent'
+import { ActivityContainer } from '../types/acitvity-types'
 
 export const getServerSideProps = withSessionSsr(
   async function getServerSideProps ({ req }: GetServerSidePropsContext): Promise<any> {
@@ -21,7 +23,7 @@ export const getServerSideProps = withSessionSsr(
       const { access_token } = req.session.tokens
       const { id } = req.session.user
       
-      const activities = await getActivitiesFor(id, access_token)
+      const activities: ActivityContainer = await getActivitiesFor(id, access_token) || []
       
       try {
         return {
@@ -37,11 +39,11 @@ export const getServerSideProps = withSessionSsr(
     }
   })
 
-function Activities({ activities }: any) {  
+function Activities({ activities }: {activities: ActivityContainer}) {  
   const [isLoading, setIsLoading] = React.useState(true)
 
   React.useEffect(() => {
-    setIsLoading(false)
+      setIsLoading(false)
   },[isLoading])
 
   if (isLoading) {
@@ -53,28 +55,7 @@ function Activities({ activities }: any) {
     <main className={styles.main}>
       <div className={styles.grid}>
       <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th scope="col">Action</th>
-            <th scope="col">Created at</th>
-            <th scope="col">Target title</th>
-            <th scope="col">Target type</th>
-          </tr>
-        </thead>
-        <tbody>
-          {
-            activities.map((activity: any, index: number) => {
-              return (
-                <tr key={index}> 
-                  <th scope="row">{activity.action_name}</th>
-                  <td>{activity.created_at}</td>
-                  <td>{activity.target_title}</td>
-                  <td>{activity.target_type}</td>
-                </tr>
-              ) 
-            })
-          }
-        </tbody>
+      <TableContent activities={activities}></TableContent>
       </Table>
     </div>
   </main>
