@@ -12,6 +12,7 @@ import TableContent from "../components/TableContent"
 import { ActivityContainer } from "../types/acitvity-types"
 import Error from "next/error"
 import { IronSession } from "iron-session"
+import createErrorProps from "../utils/create-error"
 
 /**
  * Create props for Ssr and session data is stored in encrypted cookies
@@ -38,15 +39,7 @@ export const getServerSideProps = withSessionSsr(
         }
       }
     } catch (error) {
-      return {
-        props: {
-          user: null,
-          error: {
-            code: 400,
-            message: "Bad request",
-          },
-        },
-      }
+      return createErrorProps(400, "Bad request")
     }
   }
 )

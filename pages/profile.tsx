@@ -13,6 +13,7 @@ import { GetServerSidePropsContext } from "next"
 import { IronSession } from "iron-session"
 import Error from "next/error"
 import Loader from "../components/Loader"
+import createErrorProps from "../utils/create-error"
 
 /**
  * Create props for Ssr and session data is stored in encrypted cookies
@@ -29,15 +30,7 @@ export const getServerSideProps = withSessionSsr(
         req.session.tokens = await setSessionToken(code, false)
         await req.session.save()
       } else {
-        return {
-          props: {
-            tokens: null,
-            error: {
-              code: 401,
-              message: "Unauthorized",
-            },
-          },
-        }
+        return createErrorProps(401, "Unauthorized")
       }
       return {
         redirect: {
@@ -56,16 +49,7 @@ export const getServerSideProps = withSessionSsr(
       if (refresh_token) {
         req.session.tokens = await setSessionToken(refresh_token, true)
       } else {
-        return {
-          props: {
-            tokens: null,
-            user: null,
-            error: {
-              code: 400,
-              message: "Expired tokens",
-            },
-          },
-        }
+        return createErrorProps(400, "Expired tokens")
       }
 
       await req.session.save()
@@ -85,16 +69,7 @@ export const getServerSideProps = withSessionSsr(
         },
       }
     } catch (error: any) {
-      return {
-        props: {
-          tokens: null,
-          user: null,
-          error: {
-            code: 401,
-            message: "Unauthorized",
-          },
-        },
-      }
+      return createErrorProps(401, "Unauthorized")
     }
   }
 )
