@@ -6,7 +6,6 @@ import React from 'react'
 import Layout from '../components/Layout'
 
 function MyApp({ Component, pageProps }: AppProps) {
-  console.log(pageProps)
     return (
       <>
       <Layout title={pageProps.pageTitle} user={pageProps.user}>
