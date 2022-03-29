@@ -48,7 +48,7 @@ export async function getOAuthTokens({code, refresh_token}:RequestType): Promise
 
   // if the parameter includes the keyword 
   if (refresh_token) {
-    options.refresh_token = code.split(' ')[1]
+    options.refresh_token = code
     } else {
     options.code = code
     }
