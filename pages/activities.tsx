@@ -4,6 +4,7 @@ import { Table } from 'react-bootstrap'
 import { generateState, withSessionSsr } from '../utils/server-side-props'
 import { getActivitiesFor, OAuthURI } from '../utils/config'
 import { GetServerSidePropsContext } from 'next'
+import Loader from '../components/Loader'
 
 export const getServerSideProps = withSessionSsr(
   async function getServerSideProps ({ req }: GetServerSidePropsContext): Promise<any> {
@@ -37,7 +38,17 @@ export const getServerSideProps = withSessionSsr(
   })
 
 function Activities({ activities }: any) {  
-  
+  const [isLoading, setIsLoading] = React.useState(true)
+
+  React.useEffect(() => {
+    setIsLoading(false)
+  },[isLoading])
+
+  if (isLoading) {
+    return (
+      <Loader/>
+    )
+  } else {
   return (
     <main className={styles.main}>
       <div className={styles.grid}>
@@ -68,6 +79,7 @@ function Activities({ activities }: any) {
     </div>
   </main>
   )
+}
 }
 
 export default Activities

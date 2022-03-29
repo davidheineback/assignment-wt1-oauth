@@ -8,6 +8,7 @@ import { setSessionToken, invalidToken, generateState, withSessionSsr} from '../
 import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next'
 import { IronSession } from 'iron-session'
 import Error from 'next/error'
+import Loader from '../components/Loader'
 
 
 
@@ -68,11 +69,20 @@ export const getServerSideProps = withSessionSsr(
   })
 
 function Profile({ user, error }:IronSession) {
+  const [isLoading, setIsLoading] = React.useState(true)
   
+  React.useEffect(() => {
+    setIsLoading(false)
+  },[isLoading])
+
   if (error) {
     return <Error title={error.message} statusCode={error.code} />
   }
+  
 
+  if(isLoading) {
+    return <Loader/>
+  } else {
   return (
     user &&
     <main className={styles.main}>
@@ -97,6 +107,7 @@ function Profile({ user, error }:IronSession) {
     </div>
   </main>
   )
+}
 }
 
 export default Profile
