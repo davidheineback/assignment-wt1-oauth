@@ -1,8 +1,8 @@
-import styles from "../styles/Home.module.css"
-import { OAuthURI } from "../utils/config"
-import { generateState, withSessionSsr } from "../utils/server-side-props"
-import { IronSession } from "iron-session"
-import { GetServerSidePropsContext } from "next"
+import styles from '../styles/Home.module.css'
+import { OAuthURI } from '../utils/config'
+import { generateState, withSessionSsr } from '../utils/server-side-props'
+import { IronSession } from 'iron-session'
+import { GetServerSidePropsContext } from 'next'
 
 /**
  * Create props for Ssr and session data is stored in encrypted cookies
@@ -14,7 +14,7 @@ export const getServerSideProps = withSessionSsr(
     if (req.session?.tokens?.access_token) {
       return {
         redirect: {
-          destination: "/profile",
+          destination: '/profile',
           permanent: false,
         },
       }

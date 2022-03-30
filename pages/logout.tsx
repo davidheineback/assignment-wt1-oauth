@@ -1,5 +1,5 @@
-import { withSessionSsr } from "../utils/server-side-props"
-import { revokeAccess } from "../utils/config"
+import { withSessionSsr } from '../utils/server-side-props'
+import { revokeAccess } from '../utils/config'
 
 /**
  * Create props for Ssr destroy session data is stored in encrypted cookies
@@ -13,7 +13,7 @@ export const getServerSideProps = withSessionSsr(
 
     return {
       redirect: {
-        destination: "/",
+        destination: '/',
         permanent: false,
       },
     }

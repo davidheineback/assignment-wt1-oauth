@@ -2,14 +2,14 @@
  * Takes a state parameter and creates a gitlab oauth/authorize token with state and ask for code response
  */
 function getGitLabURI(state: string) {
-  const rootUrl = "https://gitlab.lnu.se/oauth/authorize"
+  const rootUrl = 'https://gitlab.lnu.se/oauth/authorize'
 
   const options = {
     redirect_uri: process.env.NEXT_PUBLIC_GITLAB_OAUTH_REDIRECT_URI!,
     client_id: process.env.NEXT_PUBLIC_GITLAB_APP_ID!,
-    response_type: "code",
+    response_type: 'code',
     state,
-    scope: ["read_api", "read_user"].join(" "),
+    scope: ['read_api', 'read_user'].join(' '),
   }
 
   const qs = new URLSearchParams(options)

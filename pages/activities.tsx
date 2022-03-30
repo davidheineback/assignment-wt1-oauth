@@ -1,18 +1,18 @@
-import React from "react"
-import styles from "../styles/Home.module.css"
-import { Table } from "react-bootstrap"
+import React from 'react'
+import styles from '../styles/Home.module.css'
+import { Table } from 'react-bootstrap'
 import {
   redirectWithNewStateFrom,
   withSessionSsr,
-} from "../utils/server-side-props"
-import { getActivitiesFor, OAuthURI } from "../utils/config"
-import { GetServerSidePropsContext } from "next"
-import Loader from "../components/Loader"
-import TableContent from "../components/TableContent"
-import { ActivityContainer } from "../types/acitvity-types"
-import Error from "next/error"
-import { IronSession } from "iron-session"
-import createErrorProps from "../utils/create-error"
+} from '../utils/server-side-props'
+import { getActivitiesFor, OAuthURI } from '../utils/config'
+import { GetServerSidePropsContext } from 'next'
+import Loader from '../components/Loader'
+import TableContent from '../components/TableContent'
+import { ActivityContainer } from '../types/acitvity-types'
+import Error from 'next/error'
+import { IronSession } from 'iron-session'
+import createErrorProps from '../utils/create-error'
 
 /**
  * Create props for Ssr and session data is stored in encrypted cookies
@@ -30,16 +30,17 @@ export const getServerSideProps = withSessionSsr(
         const { id } = req.session.user
         const activities: ActivityContainer =
           (await getActivitiesFor(id, access_token)) || []
+        await new Promise((resolve) => setTimeout(resolve, 3000))
         return {
           props: {
             user: req.session.user,
             activities,
-            pageTitle: "Activities",
+            pageTitle: 'Activities',
           },
         }
       }
     } catch (error) {
-      return createErrorProps(400, "Bad request")
+      return createErrorProps(400, 'Bad request')
     }
   }
 )
@@ -52,7 +53,7 @@ function Activities({
   error,
 }: {
   activities: ActivityContainer
-  error: IronSession["error"]
+  error: IronSession['error']
 }) {
   const [isLoading, setIsLoading] = React.useState(true)
 

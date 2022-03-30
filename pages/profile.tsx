@@ -1,19 +1,19 @@
-import React from "react"
-import styles from "../styles/Home.module.css"
-import { getUserData } from "../utils/config"
-import Image from "next/image"
-import Link from "next/link"
+import React from 'react'
+import styles from '../styles/Home.module.css'
+import { getUserData } from '../utils/config'
+import Image from 'next/image'
+import Link from 'next/link'
 import {
   setSessionToken,
   invalidToken,
   redirectWithNewStateFrom,
   withSessionSsr,
-} from "../utils/server-side-props"
-import { GetServerSidePropsContext } from "next"
-import { IronSession } from "iron-session"
-import Error from "next/error"
-import Loader from "../components/Loader"
-import createErrorProps from "../utils/create-error"
+} from '../utils/server-side-props'
+import { GetServerSidePropsContext } from 'next'
+import { IronSession } from 'iron-session'
+import Error from 'next/error'
+import Loader from '../components/Loader'
+import createErrorProps from '../utils/create-error'
 
 /**
  * Create props for Ssr and session data is stored in encrypted cookies
@@ -25,18 +25,18 @@ export const getServerSideProps = withSessionSsr(
   }: GetServerSidePropsContext): Promise<any> {
     const { code, state } = query
     // check for code and validates session state
-    if (code && typeof code === "string") {
+    if (code) {
       if (state === req.session.state) {
-        req.session.tokens = await setSessionToken(code, false)
+        req.session.tokens = await setSessionToken(code as string, false)
         await req.session.save()
+        return {
+          redirect: {
+            destination: '/profile',
+            permanent: false,
+          },
+        }
       } else {
-        return createErrorProps(401, "Unauthorized")
-      }
-      return {
-        redirect: {
-          destination: "/profile",
-          permanent: false,
-        },
+        return createErrorProps(401, 'Unauthorized')
       }
     } else if (!req.session.tokens) {
       const redirect = await redirectWithNewStateFrom(req.session)
@@ -49,7 +49,7 @@ export const getServerSideProps = withSessionSsr(
       if (refresh_token) {
         req.session.tokens = await setSessionToken(refresh_token, true)
       } else {
-        return createErrorProps(400, "Expired tokens")
+        return createErrorProps(401, 'Unauthorized')
       }
 
       await req.session.save()
@@ -65,11 +65,11 @@ export const getServerSideProps = withSessionSsr(
       return {
         props: {
           user: req.session.user,
-          pageTitle: "Profile",
+          pageTitle: 'Profile',
         },
       }
     } catch (error: any) {
-      return createErrorProps(401, "Unauthorized")
+      return createErrorProps(401, 'Unauthorized')
     }
   }
 )
@@ -97,7 +97,7 @@ function Profile({ user, error }: IronSession) {
           <div className={styles.grid}>
             <div className={styles.card}>
               <h1>{user.name}</h1>
-              <div style={{ borderRadius: "100px", overflow: "hidden" }}>
+              <div style={{ borderRadius: '100px', overflow: 'hidden' }}>
                 <Image
                   width="100px"
                   height="100px"
